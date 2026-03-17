@@ -2,7 +2,7 @@ name: pipeline
 on:
   push:
     branches:
-      - "go_app_compose_cdci"
+      - "go_app_compose_cdci_2"
 
 jobs:
   build-push:
@@ -30,3 +30,12 @@ jobs:
           context: ./docker
           push: true
           tags: linhbngo/go_server:latest
+  deploy:
+    needs: build-push # Wait for the image to hit Docker Hub
+    runs-on: self-hosted  # This tells GitHub to execute this on your CloudLab node!
+    steps:
+      - name: Deploy the updated stack
+        run: |
+          # The runner executes these commands directly on your CloudLab server
+          docker compose pull go_app
+          docker compose up -d
